@@ -1,24 +1,28 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
+    "target": "es6",
+   /*": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
+    */
+   // "allowJs": true,
+  //  "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+   // "allowSyntheticDefaultImports": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+  //  "forceConsistentCasingInFileNames": true,
+   // "noFallthroughCasesInSwitch": true,
+    "module": "commonjs",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "baseUrl": "./src" /* Base directory to resolve non-absolute module names. */,
+    //"resolveJsonModule": true,
+  //  "isolatedModules": false,
+  //  "noEmit": true,
+   // "jsx": "react-jsx"
+   "skipLibCheck": true /* Skip type checking of declaration files. */,
+		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
   "include": [
     "src"
