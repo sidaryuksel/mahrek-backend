@@ -1,12 +1,14 @@
 import express from "express";
 import {
-    updatePerson,
-    getPerson
+    updateNode,
+    getPerson,
+    createNode
 } from "./personController";
 
 const personRoute = express.Router();
 
 personRoute.route('/').get(getPerson);
-personRoute.route('/update').put(updatePerson);
+personRoute.route("/:id").put(updateNode);
+personRoute.route('/node').post(createNode);
 
 export default personRoute;

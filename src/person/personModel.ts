@@ -2,9 +2,11 @@ import mongoose, { model } from "mongoose";
 
 const personSchema = new mongoose.Schema(
     {
-        id: {
-            type: Number,
-            required: true
+        _id: String,
+        name: {
+            type: String,
+            default: "",
+            trim: true,
         },
         price: {
             type: Number,
@@ -14,20 +16,21 @@ const personSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
-        name: {
+        parentId: {
             type: String,
-            default: "" 
-        },
-        children: Array
+            default: ""
+        }
 
     },
     {
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
+        timestamps: true
+
     }
 )
 
-personSchema.virtual("id").get((function (this: {_id: string}) {
+personSchema.virtual("id").get((function (this: { _id: string }) {
     return this._id;
 }))
 
