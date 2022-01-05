@@ -2,7 +2,6 @@ import mongoose, { model } from "mongoose";
 
 const personSchema = new mongoose.Schema(
     {
-        _id: String,
         name: {
             type: String,
             default: "",
