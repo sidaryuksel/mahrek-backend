@@ -1,17 +1,13 @@
 import Person from "./personModel";
 import { RequestHandler } from "express";
-import Tree from './tree';
-
 import createTree from './createTree';
+import totalPrice from './totalPrice';
 
 export const getPerson: RequestHandler = async (req, res) => {
 	try {
 		let treeRoot = await Person.find({ parentId: "" });
 
 		const result = await createTree(treeRoot);
-
-
-			console.log("treeRoot",treeRoot[0].children);
 
 		if (treeRoot.length === 0)
 			res.status(204)
@@ -30,7 +26,6 @@ export const getPerson: RequestHandler = async (req, res) => {
 };
 
 export const clearNodeAndChildren: RequestHandler = async (req, res) => {
-	console.log("delete node:", req.params.id);
 	let stack = [];
 	try {
 		if (req.params.id === undefined)
@@ -41,14 +36,11 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 			await Person.findByIdAndDelete(req.params.id);
 			stack.push(req.params.id);
 			while (stack.length != 0) {
-				console.log("while icindeyim");
 				let nodeId = stack.pop();
 				const foundNodes = await Person.find({ parentId: nodeId });
-				console.log("foudnnoeds:", foundNodes);
 				foundNodes.forEach(async (node) => {
 					stack.push(node.id);
 					const deleted = await Person.findByIdAndDelete(node.id);
-					console.log("deleted node: ", deleted);
 				})
 			}
 		}
@@ -64,8 +56,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 }
 
 export const updateNode: RequestHandler = async (req, res) => {
-	//console.log("update: ", req.body.data); 
-	//console.log(req.params.id);
+
 	try {
 		if (req.body.data.id === undefined)
 			res
@@ -76,11 +67,39 @@ export const updateNode: RequestHandler = async (req, res) => {
 				name: req.body.data.name,
 				price: req.body.data.price
 			});
-			//console.log("update person: ", updateNode);
 			res.status(200).json({
 				status: "success",
 				message: "Person Updated",
 				data: { person: updateNode },
+			});
+		}
+	} catch (err) {
+		res.status(500).json({
+			status: "fail",
+			message: "Some error occured please reffer the error",
+			err,
+		});
+	}
+
+};
+
+export const updateTotal: RequestHandler = async (req, res) => {
+	console.log("total req body:", req.body.data);
+	try {
+		if (req.body.data.id === undefined)
+			res
+				.status(400)
+				.json({ status: "fail", message: "Request Body is not acceptable!" });
+		else {
+			let queue:any = [];
+			totalPrice(req.params.id, queue);
+
+			console.log("queue: ", queue);
+			
+			res.status(200).json({
+				status: "success",
+				message: "Total price Updated",
+				data: { person: queue },
 			});
 		}
 	} catch (err) {
