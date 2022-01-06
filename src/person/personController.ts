@@ -1,16 +1,25 @@
 import Person from "./personModel";
 import { RequestHandler } from "express";
+import Tree from './tree';
+
+import createTree from './createTree';
 
 export const getPerson: RequestHandler = async (req, res) => {
 	try {
-		const persons = await Person.find();
-		console.log("get people: ", persons);
-		if (persons.length === 0)
+		let treeRoot = await Person.find({ parentId: "" });
+
+		const result = await createTree(treeRoot);
+
+
+			console.log("treeRoot",treeRoot[0].children);
+
+		if (treeRoot.length === 0)
 			res.status(204)
 				.json({ status: "success", message: "No Person in database!" });
 		else
 			res.status(200)
-				.json({ status: "success", message: "Persons found", data: persons });
+				.json({ status: "success", message: "Persons found", data: treeRoot });
+
 	} catch (err) {
 		res.status(500).json({
 			status: "fail",
@@ -35,7 +44,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 				console.log("while icindeyim");
 				let nodeId = stack.pop();
 				const foundNodes = await Person.find({ parentId: nodeId });
-				console.log("foudnnoeds:",foundNodes);
+				console.log("foudnnoeds:", foundNodes);
 				foundNodes.forEach(async (node) => {
 					stack.push(node.id);
 					const deleted = await Person.findByIdAndDelete(node.id);
@@ -44,7 +53,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 			}
 		}
 
-	} catch(err) {
+	} catch (err) {
 
 		res.status(500).json({
 			status: "fail",

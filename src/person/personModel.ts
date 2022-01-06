@@ -18,6 +18,10 @@ const personSchema = new mongoose.Schema(
         parentId: {
             type: String,
             default: ""
+        },
+        children: {
+            type: Array,
+            default: []
         }
 
     },
