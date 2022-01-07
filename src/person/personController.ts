@@ -5,19 +5,10 @@ import totalPrice from './totalPrice';
 import Pusher from "pusher";
 
 
-const pusher = new Pusher({
-    appId: "1327762",
-    key: "2a2bca4cf92576d43e20",
-    secret: "9a6b84c9cd26fcf77042",
-    cluster: "eu",
-    useTLS: true
-  });
-
 
 
 export const getPerson: RequestHandler = async (req, res) => {
-	pusher.trigger("mahrek-project", "get-nodes", {
-	  });
+
 	try {
 		let treeRoot = await Person.find({ parentId: "" });
 

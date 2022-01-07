@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import personRoute from "./person/personRoute";
-
+import cors from 'cors';
 const app = express();
 app.use(express.json());
 
@@ -9,6 +9,7 @@ if(process.env.NODE_ENV === "development"){
     app.use(morgan("dev"));
 }
 
+app.use(cors());
 app.use("/api", personRoute);
 app.get("/", (req: any, res: any) => {
     res.send("<h1>Sidar Yüksel Mahrek Project, backend side</h1>");
