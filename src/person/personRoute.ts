@@ -7,6 +7,7 @@ import {
     clearNodeAndChildren
 } from "./personController";
 
+  
 const personRoute = express.Router();
 
 personRoute.route('/').get(getPerson);
