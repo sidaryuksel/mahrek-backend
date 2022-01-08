@@ -13,8 +13,8 @@ export default async function createTree(nodes: any) {
 
                 node.children = getChildren;
 
-                let result = await createTree(node.children);
-                console.log("result: ", result);
+                await createTree(node.children);
+
             } catch (err) {
                 console.log(err);
             }
@@ -30,7 +30,6 @@ export default async function createTree(nodes: any) {
             console.log("newparent: ", newParent);
     
         }*/
-        console.log("newnodes", newNodes);
         return newNodes;
     } catch (err) {
         console.log("creating a tree has problem: ", err)

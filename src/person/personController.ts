@@ -1,10 +1,7 @@
 import Person from "./personModel";
 import { RequestHandler } from "express";
 import createTree from './createTree';
-import totalPrice from './totalPrice';
-import Pusher from "pusher";
-
-
+import totalPriceUpdate from './totalPriceUpdate';
 
 
 export const getPerson: RequestHandler = async (req, res) => {
@@ -61,6 +58,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 }
 
 export const updateNode: RequestHandler = async (req, res) => {
+			const data = req.body.data;
 
 	try {
 		if (req.body.data.id === undefined)
@@ -68,10 +66,17 @@ export const updateNode: RequestHandler = async (req, res) => {
 				.status(400)
 				.json({ status: "fail", message: "Request Body is not acceptable!" });
 		else {
+			let difference = data.price - data.prevPrice;
 			const updateNode = await Person.findByIdAndUpdate(req.params.id, {
-				name: req.body.data.name,
-				price: req.body.data.price
+				name: data.name,
+				price: data.price,
+				totalPrice: data.totalPrice + difference
 			});
+
+			console.log("udapted node:",updateNode);
+
+			await totalPriceUpdate(updateNode.parentId, difference);
+
 			res.status(200).json({
 				status: "success",
 				message: "Person Updated",
@@ -87,38 +92,6 @@ export const updateNode: RequestHandler = async (req, res) => {
 	}
 
 };
-
-export const updateTotal: RequestHandler = async (req, res) => {
-	console.log("total req body:", req.body.data);
-	try {
-		if (req.body.data.id === undefined)
-			res
-				.status(400)
-				.json({ status: "fail", message: "Request Body is not acceptable!" });
-		else {
-			let queue:any = [];
-			totalPrice(req.params.id, queue);
-
-			console.log("queue: ", queue);
-			
-			res.status(200).json({
-				status: "success",
-				message: "Total price Updated",
-				data: { person: queue },
-			});
-		}
-	} catch (err) {
-		//console.log("update 500 err: ",err);
-
-		res.status(500).json({
-			status: "fail",
-			message: "Some error occured please reffer the error",
-			err,
-		});
-	}
-
-};
-
 
 export const createNode: RequestHandler = async (req, res) => {
 
