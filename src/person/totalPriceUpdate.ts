@@ -2,7 +2,7 @@ import Person from "./personModel";
 
 export default async function totalPriceUpdate(id: any, diff: number) {
     try {
-        const node = await Person.findById(id);
+        const node = await Person.findById({_id: id});
         node.totalPrice += diff;
         node.save();
         console.log("saved node:", node);

@@ -2,7 +2,11 @@ import Person from "./personModel";
 import { RequestHandler } from "express";
 import createTree from './createTree';
 import totalPriceUpdate from './totalPriceUpdate';
+import Pusher from "pusher";
 
+const pusher = new Pusher({
+
+});
 
 export const getPerson: RequestHandler = async (req, res) => {
 
@@ -28,6 +32,7 @@ export const getPerson: RequestHandler = async (req, res) => {
 };
 
 export const clearNodeAndChildren: RequestHandler = async (req, res) => {
+	const data = req.body;
 	let stack = [];
 	try {
 		if (req.params.id === undefined)
@@ -36,6 +41,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 				.json({ status: "fail", message: "Request body is not acceptable!" });
 		else {
 			await Person.findByIdAndDelete(req.params.id);
+
 			stack.push(req.params.id);
 			while (stack.length != 0) {
 				let nodeId = stack.pop();
@@ -45,8 +51,16 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 					const deleted = await Person.findByIdAndDelete(node.id);
 				})
 			}
-		}
 
+			try {
+				const diff = 0 - data.totalPrice;
+				console.log("diff delete", diff);
+				await totalPriceUpdate(data.parentId, diff);
+			} catch (err) { console.log("delete total price problem: ", err); }
+		}
+		pusher.trigger("mahrek-project", "get-nodes", {
+			message: "updated data"
+		});
 	} catch (err) {
 
 		res.status(500).json({
@@ -58,7 +72,7 @@ export const clearNodeAndChildren: RequestHandler = async (req, res) => {
 }
 
 export const updateNode: RequestHandler = async (req, res) => {
-			const data = req.body.data;
+	const data = req.body.data;
 
 	try {
 		if (req.body.data.id === undefined)
@@ -73,10 +87,13 @@ export const updateNode: RequestHandler = async (req, res) => {
 				totalPrice: data.totalPrice + difference
 			});
 
-			console.log("udapted node:",updateNode);
-
-			await totalPriceUpdate(updateNode.parentId, difference);
-
+			console.log("udapted node:", updateNode);
+			try {
+				if (!updateNode || !updateNode.parentId) { }
+				else await totalPriceUpdate(updateNode.parentId, difference);
+			} catch (err) {
+				console.log("error on update totalprice function: ", err);
+			}
 			res.status(200).json({
 				status: "success",
 				message: "Person Updated",
